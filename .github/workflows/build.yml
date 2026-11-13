@@ -1,4 +1,3 @@
-
 name: Build Self-Contained FlyleafPlayer
 
 on:
@@ -21,8 +20,11 @@ jobs:
         dotnet-version: '10.0.x'
 
     - name: Izgradi Self-Contained Portable EXE
+      shell: pwsh
       run: |
-        dotnet publish Samples/FlyleafPlayer/FlyleafPlayer.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o ./output
+        $proj = Get-ChildItem -Path "Samples" -Recurse -Filter "FlyleafPlayer*.csproj" | Select-Object -First 1
+        Write-Host "Pronađen projekt: $($proj.FullName)"
+        dotnet publish $proj.FullName -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o ./output
 
     - name: Zapakiraj gotov program
       uses: actions/upload-artifact@v4
