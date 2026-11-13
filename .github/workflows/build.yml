@@ -22,12 +22,16 @@ jobs:
     - name: Izgradi Self-Contained Portable EXE
       shell: pwsh
       run: |
-        $proj = Get-ChildItem -Path "Samples" -Recurse -Filter "FlyleafPlayer*.csproj" | Select-Object -First 1
+        $proj = Get-ChildItem -Path "Samples" -Recurse -Filter "*WPF Control*.csproj" | Select-Object -First 1
         Write-Host "Pronađen projekt: $($proj.FullName)"
         dotnet publish $proj.FullName -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o ./output
+        Rename-Item -Path "./output/*.exe" -NewName "FlyleafPlayer.exe"
+        New-Item -Path "./output/Flyleaf.Config.json" -ItemType File -Value "{}"
+        New-Item -Path "./output/Flyleaf.Engine.json" -ItemType File -Value "{}"
 
     - name: Zapakiraj gotov program
       uses: actions/upload-artifact@v4
       with:
         name: FlyleafPlayer-SelfContained-x64
         path: ./output
+
